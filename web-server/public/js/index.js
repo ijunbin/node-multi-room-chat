@@ -18,8 +18,11 @@ socket.on('chat message', function(msg){
 });
 
 socket.on('list room', function(data) {
-    console.log("房间列表: ",data.rooms);
-    showRoom(data.rooms.split(","));
+    var rooms = [];
+    if(data.rooms.indexOf(",") > 0){
+        rooms = data.rooms.split(",");
+    }
+    showRoom(rooms);
 });
 
 socket.on('enter roomed',function(data){
@@ -75,7 +78,7 @@ $("#createRoom").click(function(event) {
 })
 
 var showRoom = function(rooms){
-    $('#room').show();
+    $('#dialog').show();
     $('#auth').hide(true);
     $('#chat').hide(true);    
     if(rooms && rooms.length > 0){
@@ -101,7 +104,7 @@ var showAuth = function(){
 }
 
 var showChat = function(){
-    $('#room').hide(true);
+    $('#dialog').hide(true);
     $('#auth').hide(true);
     $('#chat').show();     
 }
