@@ -1,11 +1,9 @@
 var reg = /^[a-zA-Z0-9_]+$/;
 
 
-var socket = io("http://localhost:8888",{'force new connection': true});
-var roomId = -1;
+var socket = io("http://127.0.0.1:8888",{'force new connection': true});
 $('form').submit(function(){
     var data = {
-        room:roomId,
         msg:$('#m').val()
     }
     socket.emit('chat message', JSON.stringify(data));
@@ -18,16 +16,13 @@ socket.on('chat message', function(msg){
 });
 
 socket.on('list room', function(data) {
-    var rooms = [];
-    if(data.rooms.indexOf(",") > 0){
-        rooms = data.rooms.split(",");
-    }
-    showRoom(rooms);
+    console.log(data);
+    showRoom(data.rooms);
 });
 
 socket.on('enter roomed',function(data){
     if(data.success){
-        socket.emit('join room',JSON.stringify({room:data.rid}));
+        socket.emit('join room');
     }else{
        alert(data.msg); 
     }
@@ -35,7 +30,6 @@ socket.on('enter roomed',function(data){
 
 socket.on('join roomed',function(data){
     if(data.success){
-        roomId = data.room;
         showChat();    
     }               
 });
@@ -46,6 +40,7 @@ socket.on('connect', function() {
     //主动获取房间列表 
     socket.emit('list room');
 });
+
 socket.on("disconnect",function(){
     console.log("连接已断开...");
 })
@@ -77,22 +72,24 @@ $("#createRoom").click(function(event) {
     showAuth();    
 })
 
-var showRoom = function(rooms){
+var showRoom = function(rInfo){
     $('#dialog').show();
     $('#auth').hide(true);
     $('#chat').hide(true);    
-    if(rooms && rooms.length > 0){
+    if(rInfo && Object.getOwnPropertyNames(rInfo).length > 0){
         //显示所有房间
         $('#roomtip').html("房间列表：");
         var wrap = null;
-        for(var i=0;i<rooms.length;i++){
+        var i = 0;
+        for(var key in rInfo){
             if(i%3 == 0){
                 wrap = $('<div></div>');
                 wrap.appendTo($('#rooms'));  
             }
-            var childdiv =$('<div></div>').html(rooms[i]);
+            var childdiv =$('<div></div>').html(key+" (人数："+rInfo[key]+")");
             childdiv.addClass('mcel');
-            childdiv.appendTo(wrap);                 
+            childdiv.appendTo(wrap);
+            i++;                 
         }
     }else{
         $('#roomtip').html("房间列表为空");
