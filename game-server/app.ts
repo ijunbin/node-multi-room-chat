@@ -46,8 +46,22 @@ class App{
         console.log("收到 join room 协议...");
         var session = SessionServer.get(socket.id);
         socket.join(session.roomId);
-        socket.emit('join roomed',{success:true});
-        socket.broadcast.in(session.roomId).emit('chat message',"欢迎用户 "+session.uId+" 加入房间");
+        var room = RoomServer.getRoom(session.roomId);
+        if(!room){
+          socket.emit('join roomed',{success:false,msg:"eror 505"});  
+        }else{
+          var ids = [];
+          var users = room.getAllUser();
+          for(var i=0;i<users.length;i++){
+            ids.push(users[i].uId);
+          }
+          socket.emit('join roomed',{success:true,name:session.uId,room:session.roomId,users:ids});
+          var data = {
+            user:session.uId,              
+            msg:"欢迎用户 "+session.uId+" 加入房间"
+          }
+          socket.broadcast.in(session.roomId).emit('add user',JSON.stringify(data));
+        }
       });
 
       //发送消息
@@ -55,14 +69,25 @@ class App{
         var info = JSON.parse(msg);
         console.log('chat message',info);
         var session = SessionServer.get(socket.id)
-        if(session.roomId){
-          //发送到默认namespace下的特定room 
-          io.sockets.in(session.roomId).emit('chat message',info.msg);
+        if(info.to == "*"){
+          if(session.roomId){
+            //发送到默认namespace下的特定room 
+            io.sockets.in(session.roomId).emit('chat message',info.msg);
+          }else{
+            //发送到默认namespace下的默认room 
+            io.emit('chat message',info.msg);  
+          }
         }else{
-          //发送到默认namespace下的默认room 
-          io.emit('chat message',info.msg);  
+          var room = RoomServer.getRoom(session.roomId);
+          if(room){
+            var player = room.getUser(info.to);
+            if(player){
+              io.to(player.socketId).emit("chat message",info.msg); 
+            }
+          }
         }
       });
+
 
       //进入房间
       socket.on('enter room', function(msg){
@@ -78,7 +103,7 @@ class App{
               result.success = false;
               result.msg = "该玩家已经在房间内，请使用其他用户名";  
             }else{
-              var player = new Player(info.userId,info.rid)
+              var player = new Player(info.userId,info.rid,socket.id);
               room.addUser(player);
               //设置session
               SessionServer.set(socket.id,player);

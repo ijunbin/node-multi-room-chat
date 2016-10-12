@@ -27,6 +27,12 @@ export class Room{
    }
 
    /**
+    * 获取房间内的某位玩家
+    */
+   public getUser(uId:number):Player{
+     return this.players[uId];
+   }
+   /**
     * 删除房间内用户
     */
    public deleteUser(userId:number){

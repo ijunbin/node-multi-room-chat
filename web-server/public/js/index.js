@@ -1,9 +1,9 @@
 var reg = /^[a-zA-Z0-9_]+$/;
 
-
 var socket = io("http://127.0.0.1:8888",{'force new connection': true});
 $('form').submit(function(){
     var data = {
+        to:$("#usersList").val(),
         msg:$('#m').val()
     }
     socket.emit('chat message', JSON.stringify(data));
@@ -11,8 +11,19 @@ $('form').submit(function(){
     return false;
 });
 
+
 socket.on('chat message', function(msg){
     $('#messages').append($('<li>').text(msg));
+});
+
+/**新玩家进入房间 */
+socket.on('add user', function(data){
+    data = JSON.parse(data);
+    $('#messages').append($('<li>').text(data.msg));
+    var slElement = $(document.createElement("option"));
+    slElement.attr("value",data.user);
+    slElement.text(data.user);
+    $("#usersList").append(slElement);
 });
 
 socket.on('list room', function(data) {
@@ -30,8 +41,10 @@ socket.on('enter roomed',function(data){
 
 socket.on('join roomed',function(data){
     if(data.success){
-        showChat();    
-    }               
+        showChat(data);    
+    }else{
+       alert(data.msg); 
+    }             
 });
 
 
@@ -100,8 +113,20 @@ var showAuth = function(){
     $('#auth').show();
 }
 
-var showChat = function(){
+var showChat = function(data){
     $('#dialog').hide(true);
     $('#auth').hide(true);
-    $('#chat').show();     
+    if(data){
+        console.log("result : ",data);
+        $('#name').html(data.name);    
+        $('#curroom').html(data.room);
+        var users = data.users;
+        for(var i = 0; i < users.length; i++) {
+            var slElement = $(document.createElement("option"));
+            slElement.attr("value", users[i]);
+            slElement.text(users[i]);
+            $("#usersList").append(slElement);
+        }
+    }
+    $('#chat').show();
 }
