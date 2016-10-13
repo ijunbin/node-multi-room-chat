@@ -1,6 +1,8 @@
 var fs = require("fs");
+var cp = require("child_process");
 import connectorMd = require("./connector")
 import connectorProcess = connectorMd.connectorProcess;
+
 /**
  * master 服务
  * 
@@ -10,55 +12,54 @@ class master{
 
     public config;
 
-    public glo_gate;
-
-    public glo_connectors;
-    
-    public glo_chats;
+    private serverMap:{[key:string]:serverInfo} = {};
 
     /**配置文件路径 */
     private configPath = "/config/servers.json";
 
 
     constructor(){
-        this.glo_connectors = [];
-        this.glo_chats = [];
+        
     }
 
 
     public start(){
         this.readConfig();
-        this.initGate();
-        this.initConnectors();
-        this.initChats();    
-    }
-
-
-    private initGate(){
-
+        this.initServers();
+        this.generateServerPorcess();
     }
 
 
     /**
-     * 初始化connector
+     * 初始化服务 
      */
-    private initConnectors(){
-        if(Array.isArray(this.config["connector"])){
-            var servers = this.config["connector"];
-            for(var i=0;i<servers.length;i++){
-                servers[i]
+    private initServers(){
+        var self = this;
+        var serverArr = ["gate","connectot","chat"];
+        serverArr.forEach(function(element, index, array){
+            if(Array.isArray(self.config[element])){
+                self.serverMap[element].serverConfig = self.config[element];
             }
-        }
+        })
     }
 
-    private initChats(){
-        if(Array.isArray(this.config["chat"])){
-            var servers = this.config["chat"];
-            for(var i=0;i<servers.length;i++){
-                this.glo_chats.push(new connectorProcess(servers[i]));
+    /**
+     * 生成服务进程
+     */
+    public generateServerPorcess(){
+        var self = this;
+        for(var key in this.serverMap){
+            var servers  = this.serverMap[key].serverConfig;
+            if(Array.isArray(servers)){
+                servers.forEach(function(element,index,array){
+                    self.serverMap[element].serverProcess = cp.fork("./"+key,servers[index]);
+                })
             }
-        }
+            cp.fork("./"+key);
+
+        }    
     }
+
 
     private readConfig(){
         this.config = JSON.parse(
@@ -67,18 +68,8 @@ class master{
     }
 }
 
-interface chatconfig{
-    id:string;
-    host:string;
-    port:string;
-}
 
-interface gateconfig{
-    id:string;
-    host:string;
-    clientPort:number;
-}
-
-interface connconfig extends gateconfig{
-    port:number;
+interface serverInfo{
+    serverConfig:any[];
+    serverProcess:any[];
 }
