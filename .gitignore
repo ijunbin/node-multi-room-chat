@@ -1,0 +1,10 @@
+#忽略npm module
+node_modules/
+
+#忽略所有生成的 js 文件,
+*.js
+
+#排除手工维护的js文件
+!socket.io.js
+!index.js
+
