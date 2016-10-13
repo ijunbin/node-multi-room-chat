@@ -6,6 +6,7 @@ import rServerMd = require("./server/roomServer");
 import RoomServer = rServerMd.RoomService;
 import sServerMd = require("./server/sessionServer");
 import SessionServer = sServerMd.SessionServer;
+import moment = require("moment");
 
 class App{
 
@@ -34,8 +35,6 @@ class App{
 
     io.on('connection', function(socket){
 
-      console.log(socket.id + " 连接了服务器...");
-
       //获取当前所有房间
       socket.on('list room',function(){
         socket.emit('list room',{rooms:RoomServer.getAllRoomInfo()});
@@ -43,7 +42,6 @@ class App{
 
       //join room 
       socket.on('join room', function() {
-        console.log("收到 join room 协议...");
         var session = SessionServer.get(socket.id);
         socket.join(session.roomId);
         var room = RoomServer.getRoom(session.roomId);
@@ -61,6 +59,7 @@ class App{
             msg:"欢迎用户 "+session.uId+" 加入房间"
           }
           socket.broadcast.in(session.roomId).emit('add user',JSON.stringify(data));
+          console.log("玩家 %s 进入了房间 %s ...",session.uId,session.roomId);
         }
       });
 
@@ -69,20 +68,27 @@ class App{
         var info = JSON.parse(msg);
         console.log('chat message',info);
         var session = SessionServer.get(socket.id)
+        var data = {
+          from:info.from,
+          to:info.to,
+          msg:info.msg,
+          timestamp:moment().unix()
+        }
         if(info.to == "*"){
+          data.to = "所有人";
           if(session.roomId){
             //发送到默认namespace下的特定room 
-            io.sockets.in(session.roomId).emit('chat message',info.msg);
+            io.sockets.in(session.roomId).emit('chat message',data);
           }else{
             //发送到默认namespace下的默认room 
-            io.emit('chat message',info.msg);  
+            io.emit('chat message',data);  
           }
         }else{
           var room = RoomServer.getRoom(session.roomId);
           if(room){
             var player = room.getUser(info.to);
             if(player){
-              io.to(player.socketId).emit("chat message",info.msg); 
+              io.to(player.socketId).emit("chat message",data); 
             }
           }
         }
@@ -93,7 +99,6 @@ class App{
       socket.on('enter room', function(msg){
           var result = <enterRoomRes>{success:true};
           var info = <enterRoomMsg>JSON.parse(msg);
-          console.log("收到玩家 %s 进入房间 %s 协议...",info.userId,info.rid);
           if(!(info.rid && info.userId)){
             result.success = false;
             result.msg = "param invalid";   
@@ -124,16 +129,15 @@ class App{
 
       socket.on('disconnect', function () {
         //如何广播到该socket所在的房间,并删除房间内的玩家数据
-        console.log("socketId:"+socket.id); 
         var player = SessionServer.get(socket.id);
-        console.log("断开连接 ",JSON.stringify(player));
         if(player){
-          console.log("房间 %s 的玩家 %s 断开连接...",player.roomId,player.uId);
+          console.log("房间 %s 的玩家 %s 断开连接..",player.roomId,player.uId);
           var room = RoomServer.getRoom(player.roomId);
           if(room){
             room.deleteUser(player.uId);
             RoomServer.updateRoom(player.roomId);
             socket.broadcast.in(player.roomId).emit('chat message',"用户 "+player.uId+" 下线");
+            socket.leave(player.roomId);
           }
         }
       });

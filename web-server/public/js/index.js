@@ -1,8 +1,11 @@
 var reg = /^[a-zA-Z0-9_]+$/;
 
 var socket = io("http://127.0.0.1:8888",{'force new connection': true});
+//当前我的Id
+var myId = 0;
 $('form').submit(function(){
     var data = {
+        from:myId,
         to:$("#usersList").val(),
         msg:$('#m').val()
     }
@@ -12,8 +15,13 @@ $('form').submit(function(){
 });
 
 
-socket.on('chat message', function(msg){
-    $('#messages').append($('<li>').text(msg));
+socket.on('chat message', function(data){
+    // data = JSON.parse(data);
+
+    var senddate = new Date();
+    senddate.setTime(data.timestamp * 1000);
+    var time = senddate.format('yyyy-MM-dd h:m:s');
+    $('#messages').append($('<li>').text("("+time+")  "+data.from+" 对 "+data.to+" : "+data.msg));
 });
 
 /**新玩家进入房间 */
@@ -117,8 +125,9 @@ var showChat = function(data){
     $('#dialog').hide(true);
     $('#auth').hide(true);
     if(data){
-        console.log("result : ",data);
-        $('#name').html(data.name);    
+        //缓存myId 
+        myId = data.name;    
+        $('#name').html(data.name);
         $('#curroom').html(data.room);
         var users = data.users;
         for(var i = 0; i < users.length; i++) {
@@ -129,4 +138,27 @@ var showChat = function(data){
         }
     }
     $('#chat').show();
+}
+
+
+Date.prototype.format = function(format) {
+       var date = {
+              "M+": this.getMonth() + 1,
+              "d+": this.getDate(),
+              "h+": this.getHours(),
+              "m+": this.getMinutes(),
+              "s+": this.getSeconds(),
+              "q+": Math.floor((this.getMonth() + 3) / 3),
+              "S+": this.getMilliseconds()
+       };
+       if (/(y+)/i.test(format)) {
+              format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+       }
+       for (var k in date) {
+              if (new RegExp("(" + k + ")").test(format)) {
+                     format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                            ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+              }
+       }
+       return format;
 }

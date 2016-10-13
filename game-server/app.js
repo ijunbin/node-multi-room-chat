@@ -5,6 +5,7 @@ var rServerMd = require("./server/roomServer");
 var RoomServer = rServerMd.RoomService;
 var sServerMd = require("./server/sessionServer");
 var SessionServer = sServerMd.SessionServer;
+var moment = require("moment");
 var App = (function () {
     function App() {
         this.socketport = 8888;
@@ -23,32 +24,63 @@ var App = (function () {
         console.log("正在启动 socket 服务器...监听 %d 端口", this.socketport);
         var io = this.io;
         io.on('connection', function (socket) {
-            console.log(socket.id + " 连接了服务器...");
             socket.on('list room', function () {
                 socket.emit('list room', { rooms: RoomServer.getAllRoomInfo() });
             });
             socket.on('join room', function () {
-                console.log("收到 join room 协议...");
                 var session = SessionServer.get(socket.id);
                 socket.join(session.roomId);
-                socket.emit('join roomed', { success: true });
-                socket.broadcast.in(session.roomId).emit('chat message', "欢迎用户 " + session.uId + " 加入房间");
+                var room = RoomServer.getRoom(session.roomId);
+                if (!room) {
+                    socket.emit('join roomed', { success: false, msg: "eror 505" });
+                }
+                else {
+                    var ids = [];
+                    var users = room.getAllUser();
+                    for (var i = 0; i < users.length; i++) {
+                        ids.push(users[i].uId);
+                    }
+                    socket.emit('join roomed', { success: true, name: session.uId, room: session.roomId, users: ids });
+                    var data = {
+                        user: session.uId,
+                        msg: "欢迎用户 " + session.uId + " 加入房间"
+                    };
+                    socket.broadcast.in(session.roomId).emit('add user', JSON.stringify(data));
+                    console.log("玩家 %s 进入了房间 %s ...", session.uId, session.roomId);
+                }
             });
             socket.on('chat message', function (msg) {
                 var info = JSON.parse(msg);
                 console.log('chat message', info);
                 var session = SessionServer.get(socket.id);
-                if (session.roomId) {
-                    io.sockets.in(session.roomId).emit('chat message', info.msg);
+                var data = {
+                    from: info.from,
+                    to: info.to,
+                    msg: info.msg,
+                    timestamp: moment().unix()
+                };
+                if (info.to == "*") {
+                    data.to = "所有人";
+                    if (session.roomId) {
+                        io.sockets.in(session.roomId).emit('chat message', data);
+                    }
+                    else {
+                        io.emit('chat message', data);
+                    }
                 }
                 else {
-                    io.emit('chat message', info.msg);
+                    var room = RoomServer.getRoom(session.roomId);
+                    if (room) {
+                        var player = room.getUser(info.to);
+                        if (player) {
+                            io.to(player.socketId).emit("chat message", data);
+                        }
+                    }
                 }
             });
             socket.on('enter room', function (msg) {
                 var result = { success: true };
                 var info = JSON.parse(msg);
-                console.log("收到玩家 %s 进入房间 %s 协议...", info.userId, info.rid);
                 if (!(info.rid && info.userId)) {
                     result.success = false;
                     result.msg = "param invalid";
@@ -60,7 +92,7 @@ var App = (function () {
                         result.msg = "该玩家已经在房间内，请使用其他用户名";
                     }
                     else {
-                        var player = new Player(info.userId, info.rid);
+                        var player = new Player(info.userId, info.rid, socket.id);
                         room.addUser(player);
                         SessionServer.set(socket.id, player);
                         var players = room.getAllUser();
@@ -76,16 +108,15 @@ var App = (function () {
                 socket.emit('enter roomed', result);
             });
             socket.on('disconnect', function () {
-                console.log("socketId:" + socket.id);
                 var player = SessionServer.get(socket.id);
-                console.log("断开连接 ", JSON.stringify(player));
                 if (player) {
-                    console.log("房间 %s 的玩家 %s 断开连接...", player.roomId, player.uId);
+                    console.log("房间 %s 的玩家 %s 断开连接..", player.roomId, player.uId);
                     var room = RoomServer.getRoom(player.roomId);
                     if (room) {
                         room.deleteUser(player.uId);
                         RoomServer.updateRoom(player.roomId);
                         socket.broadcast.in(player.roomId).emit('chat message', "用户 " + player.uId + " 下线");
+                        socket.leave(player.roomId);
                     }
                 }
             });
