@@ -2,10 +2,10 @@
 import _ = require("underscore");
 import playerMd = require("./model/player");
 import Player = playerMd.Player;
-import rServerMd = require("./server/roomServer");
-import RoomServer = rServerMd.RoomService;
-import sServerMd = require("./server/sessionServer");
-import SessionServer = sServerMd.SessionServer;
+import rServiceMd = require("./service/roomService");
+import RoomServer = rServiceMd.RoomService;
+import sServiceMd = require("./service/sessionService");
+import SessionServer = sServiceMd.SessionService;
 import moment = require("moment");
 
 class App{
@@ -15,12 +15,14 @@ class App{
    */
   private socketport:number = 8888;
 
-  public io = require('socket.io')(this.socketport);
+  public io;
 
   public start(){
     //初始化socket server
     try{
+      this.io = require('socket.io')(this.socketport);
       this.initSocket();
+      console.log("socket 服务器启动完毕 监听 %d 端口",this.socketport);
     }catch(ex){
       console.log("启动服务器失败...");
       console.log(ex.stack);
@@ -28,8 +30,6 @@ class App{
   }
 
   public initSocket(){
-
-    console.log("正在启动 socket 服务器...监听 %d 端口",this.socketport);
 
     var io = this.io;
 
@@ -172,7 +172,9 @@ var app = new App();
 app.start();
 
 
-
+process.on('uncaughtException', function(err) {
+	console.error(' Caught exception: ' + err.stack);
+});
 
 
 

@@ -1,19 +1,20 @@
 "use strict";
 var playerMd = require("./model/player");
 var Player = playerMd.Player;
-var rServerMd = require("./server/roomServer");
-var RoomServer = rServerMd.RoomService;
-var sServerMd = require("./server/sessionServer");
-var SessionServer = sServerMd.SessionServer;
+var rServiceMd = require("./service/roomService");
+var RoomServer = rServiceMd.RoomService;
+var sServiceMd = require("./service/sessionService");
+var SessionServer = sServiceMd.SessionService;
 var moment = require("moment");
 var App = (function () {
     function App() {
         this.socketport = 8888;
-        this.io = require('socket.io')(this.socketport);
     }
     App.prototype.start = function () {
         try {
+            this.io = require('socket.io')(this.socketport);
             this.initSocket();
+            console.log("socket 服务器启动完毕 监听 %d 端口", this.socketport);
         }
         catch (ex) {
             console.log("启动服务器失败...");
@@ -21,7 +22,6 @@ var App = (function () {
         }
     };
     App.prototype.initSocket = function () {
-        console.log("正在启动 socket 服务器...监听 %d 端口", this.socketport);
         var io = this.io;
         io.on('connection', function (socket) {
             socket.on('list room', function () {
@@ -126,3 +126,6 @@ var App = (function () {
 }());
 var app = new App();
 app.start();
+process.on('uncaughtException', function (err) {
+    console.error(' Caught exception: ' + err.stack);
+});

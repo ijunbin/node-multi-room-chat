@@ -1,7 +1,7 @@
 import playerMd = require("../model/player");
 import Player = playerMd.Player;
 
-export class SessionServer{
+export class SessionService{
 
     private static sessionMap:{[key:string]:Player} = {};
 
@@ -9,8 +9,8 @@ export class SessionServer{
      * 获取session
      */
     public static get(socketId:string):Player{
-        if(socketId in SessionServer.sessionMap){
-            return SessionServer.sessionMap[socketId];
+        if(socketId in SessionService.sessionMap){
+            return SessionService.sessionMap[socketId];
         }else{
             return null;
         }
@@ -20,8 +20,8 @@ export class SessionServer{
      * 设置session
      */
     public static set(socketId:string,player:Player){
-        if(!(socketId in SessionServer.sessionMap)){
-            SessionServer.sessionMap[socketId] = player;             
+        if(!(socketId in SessionService.sessionMap)){
+            SessionService.sessionMap[socketId] = player;             
         }
     }
 
@@ -29,6 +29,6 @@ export class SessionServer{
      * 清除session
      */
     public static clear(socketId:string){
-        delete SessionServer.sessionMap[socketId];
+        delete SessionService.sessionMap[socketId];
     }         
 }

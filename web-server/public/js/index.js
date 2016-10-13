@@ -16,8 +16,6 @@ $('form').submit(function(){
 
 
 socket.on('chat message', function(data){
-    // data = JSON.parse(data);
-
     var senddate = new Date();
     senddate.setTime(data.timestamp * 1000);
     var time = senddate.format('yyyy-MM-dd h:m:s');
