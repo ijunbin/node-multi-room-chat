@@ -7,6 +7,11 @@ class MyApp{
 
 
     constructor(){
+                
+    }
+
+
+    public createApp(){
         this.app = new Application();
     }
 

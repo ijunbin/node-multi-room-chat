@@ -1,11 +1,13 @@
-var fs = require("fs");
 import appUtilMd = require("./util/appUtil");
 var appUtil = appUtilMd.appUtil;
-
+import ctsMd = require("./common/constants");
+var Constants = ctsMd.Constants;
 /**
  * Application 类是server的抽象
  */
 export class Application{
+
+    
 
     public loaded = [];       // loaded component list
     public components = {};   // name -> component map
@@ -15,13 +17,6 @@ export class Application{
     public serverType = null; // current server type
     public startTime = null; // current server start time
 
-
-    /**配置文件路径 */
-    public FILEPATH = {
-        SERVER:"/config/servers.json",
-        MASTER:"/config/master.json"
-    }
-    
     // global server infos
     public master = null;         // master server info
     public servers = {};          // current global server info maps, id -> info
@@ -32,8 +27,29 @@ export class Application{
                 
     }   
 
-    public defaultConfiguration(){
-
+    /**
+     * init Application
+     */
+    public init(){
+        appUtil.defaultConfiguration(this);
+        this.startTime = moment().unix();      
     }
 
+
+    public getMaster():any{
+        return this.master;
+    }
+
+    public set(key,value){
+        this[key] = value;
+    }
+
+
+    /**
+     * start Application
+     */
+    public start(){
+        this.startTime = Date.now();
+        
+    }
 }
