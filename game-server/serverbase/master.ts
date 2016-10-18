@@ -47,16 +47,20 @@ class master{
      * 生成服务进程
      */
     public generateServerPorcess(){
-        var self = this;
-        for(var key in this.serverMap){
-            var servers  = this.serverMap[key].serverConfig;
-            if(Array.isArray(servers)){
-                servers.forEach(function(element,index,array){
-                    self.serverMap[element].serverProcess = cp.fork("./"+key,servers[index]);
-                })
+        try{
+            var self = this;
+            for(var key in this.serverMap){
+                var servers  = this.serverMap[key].serverConfig;
+                if(Array.isArray(servers)){
+                    servers.forEach(function(element,index,array){
+                        console.log("init %s server %s",key,servers[index]);
+                        self.serverMap[key].serverProcess = cp.fork("./"+key,[JSON.stringify(servers[index])]);
+                    })
+                }
             }
-            cp.fork("./"+key);
-
+        }catch(ex){
+            console.log("初始化组件进程失败...");
+            console.error(ex.stack);        
         }    
     }
 
