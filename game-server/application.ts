@@ -2,6 +2,8 @@ import appUtilMd = require("./util/appUtil");
 var appUtil = appUtilMd.appUtil;
 import ctsMd = require("./common/constants");
 var Constants = ctsMd.Constants;
+import masterMd = require("./master/master");
+var Master = masterMd.Master;
 /**
  * Application 类是server的抽象
  */
@@ -32,7 +34,6 @@ export class Application{
      */
     public init(){
         appUtil.defaultConfiguration(this);
-        this.startTime = moment().unix();      
     }
 
 
@@ -50,6 +51,18 @@ export class Application{
      */
     public start(){
         this.startTime = Date.now();
-        
+        appUtil.loadComponents(this);
+        appUtil.startUpComponents(this);
+    }
+
+    
+    public load = function(name:string){
+        if(name === Constants.RESERVED.MASTER){
+            var cmp = new Master(this);
+            this.loaded.push(cmp);
+            this.components[name] = cmp;
+        }else if(name){
+
+        }
     }
 }

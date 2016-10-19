@@ -4,8 +4,8 @@ export class Constants{
     
     /**配置文件路径 */
     public static FILEPATH = {
-        SERVER:"/config/servers.json",
-        MASTER:"/config/master.json"
+        SERVER:"config/servers.json",
+        MASTER:"config/master.json"
     }    
 
 

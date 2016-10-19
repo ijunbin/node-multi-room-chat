@@ -1,9 +1,9 @@
 import appMd = require("./Application");
-var Application = appMd.Application;
+import Application = appMd.Application;
 
 class MyApp{
     
-    public app;
+    public app:Application;
 
 
     constructor(){
@@ -12,10 +12,16 @@ class MyApp{
 
 
     public createApp(){
-        this.app = new Application();
+        var app = new Application();
+        app.init();
+        this.app = app;
     }
-
+    
 }
 
+
+var myapp = new MyApp()
+myapp.createApp();
+myapp.app.start();
 
 
