@@ -46,9 +46,13 @@ export class Application{
         return this.master;
     }
 
-    public set(key,value){
-        this[key] = value;
+    public set(key:string,value){
+        this.settings[key] = value;
+    }
 
+
+    public get(key:string){
+        return this.settings[key];
     }
 
 

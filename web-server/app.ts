@@ -5,8 +5,11 @@ var http = require("http").Server(app);
 var port = 3700;
 
 app.use(express.static('public'));
-app.get('/', function(req, res){
+app.get('/index', function(req, res){
    res.sendFile(__dirname + '/index.html');
+});
+app.get('/nindex', function(req, res){
+   res.sendFile(__dirname + '/nindex.html');
 });
 
 

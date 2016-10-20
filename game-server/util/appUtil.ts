@@ -55,8 +55,11 @@ export class appUtil{
         var serverId = args.id || app.getMaster().id;
         var type = args.type || Constants.RESERVED.ALL;
         app.frontend = args.frontend == "true"?true:false;
-        app.set(Constants.RESERVED.SERVER_TYPE,serverType);
-        app.set(Constants.RESERVED.SERVER_ID,serverId);
+        app.serverType = serverType;
+        app.serverId = serverId;
+        if(!!args.clientPort){
+            app.set(Constants.RESERVED.CLIENT_PORT,args.clientPort);
+        }
     }
 
 

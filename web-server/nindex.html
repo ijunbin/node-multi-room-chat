@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+    <title>multi-room-chat</title>
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <div id="dialog">
+      <div id="roomtip"></div>
+      <div id="rooms">
+      </div>
+      <div class="wrapper"><button id="createRoom">登录</button></div>
+      <div id="auth">
+         <div>用户名:<input id="uid" type="text"></input></div>  
+         <div>房间ID:<input id="tid" type="text"></input></div>
+         <div class="wrapper"><button id="enterRoom">进入房间</button></div>
+      </div>  
+    </div>
+    <div id="chat">
+      <ul id="messages"></ul>
+      <div id="toolbar">
+          <ul id="status">
+              <li>
+                  users:
+                  <select name="users" id="usersList">
+                      <option value="*">
+                          all
+                      </option>
+                  </select>
+              </li>
+              <li>
+                  name:
+                  <span id="name">
+                  </span>
+              </li>
+              <li>
+                  room:
+                  <span id="curroom">
+                  </span>
+              </li>
+          </ul>
+          <form action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+          </form>
+      </div>
+    </div>
+     <script src="js/socket.io.js"></script>
+     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+     <script src="js/nindex.js"></script>
+  </body>
+</html>

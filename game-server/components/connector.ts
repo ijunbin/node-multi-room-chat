@@ -24,16 +24,15 @@ export class Connector{
         if(this.app.serverType == Constants.RESERVED.CONNECTOR){
             this.initRpcComponent();
         }
-        
     }
 
     public initIo(){
+
         var app = this.app;
 
         var io = require('socket.io')(app.get(Constants.RESERVED.CLIENT_PORT));
         io.on('connection', function(socket){
             
-
             socket.on('message', function(msg){
 
             })
@@ -43,6 +42,8 @@ export class Connector{
             })
         })
 
+        console.log("%s 服务器启动完毕 监听 %d 端口",app.serverId,app.get(Constants.RESERVED.CLIENT_PORT));
+
         this.io = io;
     }
 
@@ -51,6 +52,6 @@ export class Connector{
      * 挂载远程服务
      */
     public initRpcComponent(){
-
+                
     } 
 }
