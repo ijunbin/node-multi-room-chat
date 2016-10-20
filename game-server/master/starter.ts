@@ -10,10 +10,12 @@ export class Starter{
     public static runServers = function(app){
         for(var key in app.serverTypeMaps){
             var servers = app.serverTypeMaps[key];
-            for(var i=0;i<servers.length;i++){
-                var server = servers[i];
-                Starter.run(server,key);
-            }                     
+            if(Array.isArray(servers)){
+                for(var i=0;i<servers.length;i++){
+                    var server = servers[i];
+                    Starter.run(server,key);
+                }
+            }
         }                              
     }
 
@@ -39,7 +41,9 @@ export class Starter{
 
 
     public static spawnProcess(command,host,options){
+
         var child = cp.spawn(command, options);
+
         child.stderr.on('data', function (chunk) {
             var msg = chunk.toString();
             process.stderr.write(msg);

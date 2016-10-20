@@ -4,6 +4,8 @@ import ctsMd = require("./common/constants");
 var Constants = ctsMd.Constants;
 import masterMd = require("./master/master");
 var Master = masterMd.Master;
+import contMd = require("./components/connector");
+var Connector = contMd.Connector;
 /**
  * Application 类是server的抽象
  */
@@ -24,6 +26,9 @@ export class Application{
     public servers = {};          // current global server info maps, id -> info
     public serverTypeMaps = {};   // current global type maps, type -> [info]
 
+    public frontend:boolean;
+
+    public settings = {};         //一些各自类型服务的信息  
 
     constructor(){
                 
@@ -43,6 +48,7 @@ export class Application{
 
     public set(key,value){
         this[key] = value;
+
     }
 
 
@@ -53,6 +59,7 @@ export class Application{
         this.startTime = Date.now();
         appUtil.loadComponents(this);
         appUtil.startUpComponents(this);
+        console.log("init server "+ this.serverId);
     }
 
     
@@ -61,8 +68,17 @@ export class Application{
             var cmp = new Master(this);
             this.loaded.push(cmp);
             this.components[name] = cmp;
-        }else if(name){
-
+        }else if(name === Constants.RESERVED.CONNECTOR){
+            var cmp = new Connector(this);
+            this.loaded.push(cmp);
+            this.components[name] = cmp;
+        }else{
+            
         }
+    }
+
+
+    public isFrontend():boolean{
+        return this.frontend;
     }
 }

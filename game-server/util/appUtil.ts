@@ -15,7 +15,12 @@ export class appUtil{
             //mastar 
         }else{
             //other servers
-            
+            for(var i=2;i<argv.length;i++){
+                var couple = argv[i].split("=");
+                if(couple.length == 2){
+                    args[couple[0]] = couple[1];
+                }
+            }
         }
         return args;   
     }     
@@ -49,14 +54,14 @@ export class appUtil{
         var serverType = args.serverType || Constants.RESERVED.MASTER;
         var serverId = args.id || app.getMaster().id;
         var type = args.type || Constants.RESERVED.ALL;
-
+        app.frontend = args.frontend == "true"?true:false;
         app.set(Constants.RESERVED.SERVER_TYPE,serverType);
         app.set(Constants.RESERVED.SERVER_ID,serverId);
     }
 
 
     /**
-     * 安装组件
+     * 启动组件
      */
     public static startUpComponents(app){
         for(var key in app.components){
@@ -73,9 +78,13 @@ export class appUtil{
     public static loadComponents(app){
         if(app.serverType === Constants.RESERVED.MASTER){
             //加载master组件
-            app.load("master"); 
+            app.load(Constants.RESERVED.MASTER); 
         }else{
+            if(app.frontend){
+                app.load(Constants.RESERVED.CONNECTOR);
+            }else{
 
+            }
         }
     }
 }
