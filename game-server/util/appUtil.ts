@@ -86,7 +86,7 @@ export class appUtil{
             if(app.frontend){
                 app.load(Constants.RESERVED.CONNECTOR);
             }else{
-
+                app.load(Constants.RESERVED.CHAT);
             }
         }
     }

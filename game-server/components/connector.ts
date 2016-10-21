@@ -52,6 +52,6 @@ export class Connector{
      * 挂载远程服务
      */
     public initRpcComponent(){
-                
+        
     } 
 }

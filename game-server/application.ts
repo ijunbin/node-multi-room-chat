@@ -6,6 +6,9 @@ import masterMd = require("./master/master");
 var Master = masterMd.Master;
 import contMd = require("./components/connector");
 var Connector = contMd.Connector;
+import chatMd = require("./components/chat");
+var Chat = chatMd.Chat;
+
 /**
  * Application 类是server的抽象
  */
@@ -68,16 +71,19 @@ export class Application{
 
     
     public load = function(name:string){
+        var cmp;
         if(name === Constants.RESERVED.MASTER){
-            var cmp = new Master(this);
+            cmp = new Master(this);
             this.loaded.push(cmp);
             this.components[name] = cmp;
         }else if(name === Constants.RESERVED.CONNECTOR){
-            var cmp = new Connector(this);
+            cmp = new Connector(this);
             this.loaded.push(cmp);
             this.components[name] = cmp;
         }else{
-            
+            cmp = new Chat(this);
+            this.loaded.push(cmp);
+            this.components[name] = cmp;
         }
     }
 
