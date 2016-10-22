@@ -15,7 +15,6 @@ var Chat = chatMd.Chat;
 export class Application{
 
     
-
     public loaded = [];       // loaded component list
     public components = {};   // name -> component map
 
@@ -34,7 +33,7 @@ export class Application{
     public settings = {};         //一些各自类型服务的信息  
 
     constructor(){
-                
+
     }   
 
     /**

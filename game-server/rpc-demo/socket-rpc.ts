@@ -1,12 +1,9 @@
-import proxyMd = require("./Proxy");
-var Proxy = proxyMd.Proxy;
+var proxy = require("./Proxy");
 
 /**
  * 简单版的socketRpc框架
  */
 class SocketRpc{
-
-    public rpcServer;
 
     public wrapper;
 
@@ -25,6 +22,7 @@ class SocketRpc{
         }
         this.port = port;
         this.initServer(port);
+        console.log("rpc server listening port:"+port);
     }
 
 
@@ -32,30 +30,45 @@ class SocketRpc{
         var self = this;
         var io = require('socket.io')(port);
         io.on('connection', function(socket){
-            
+            console.log("some connect...");
+
             socket.on('message', function (msg) {
 
             })
 
             socket.on('rpc', function (msg) {
+                console.log("receive the remove process call:",msg);
+                var data;
                 if(msg && msg.method){
                     if(msg.method in self.wrapper){
                         var fun = self.wrapper[msg.method];
                         if(typeof fun  === "function"){
                             var arg = self.parseParam(msg.args);
                             var result = eval("fun("+arg+")");
-                            var data = {
-                                cbId:msg.cbId,
+                            data = {
+                                success:true,
+                                msg:undefined,
+                                cbId:msg.callbackId,
                                 args:""+result+""
                             }
-                            socket.emit("invoked",data);
                         }        
+                    }else{
+                        data = {
+                            success:false,
+                            msg:"has no method "+msg.method,
+                        }
                     }    
-                }    
+                }else{
+                    data = {
+                        success:false,
+                        msg:"invaild param..."
+                    }
+                }
+                socket.emit("invoked",data);    
             })
             
             socket.on('disconnect', function () {
-
+                console.log("some disconnect...");    
             })            
         })
     }
@@ -88,13 +101,14 @@ class SocketRpc{
         if(!host || !port){
             throw("invaild param...");
         }
-        this.initClient(host,port);        
+        return this.initClient(host,port);        
     }
 
     private static initClient(host:string,port:number){
 
         var socket = require('socket.io-client')('http://'+host+":"+port);
-        var proxy = new Proxy(socket);
-        return proxy;
+        return new proxy(socket);
     }
 }
+
+module.exports = SocketRpc;

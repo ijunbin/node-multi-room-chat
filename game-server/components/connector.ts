@@ -19,39 +19,26 @@ export class Connector{
      */
     public start(){
         
-        this.initIo();
-        // 如果是connector 服务 挂载rpc服务
-        if(this.app.serverType == Constants.RESERVED.CONNECTOR){
-            this.initRpcComponent();
-        }
-    }
-
-    public initIo(){
-
-        var app = this.app;
-
-        var io = require('socket.io')(app.get(Constants.RESERVED.CLIENT_PORT));
-        io.on('connection', function(socket){
-            
-            socket.on('message', function(msg){
-
-            })
-
-            socket.on('disconnect', function () {
-
-            })
-        })
-
-        console.log("%s 服务器启动完毕 监听 %d 端口",app.serverId,app.get(Constants.RESERVED.CLIENT_PORT));
-
-        this.io = io;
+        this.hangComp();
     }
 
     /**
-     * 
-     * 挂载远程服务
+     * 挂载组件
      */
-    public initRpcComponent(){
-        
-    } 
+    public hangComp(){
+        if(this.app.serverType == Constants.RESERVED.GATE){
+            this.initGate()                                            
+        }else if(this.app.serverType == Constants.RESERVED.CONNECTOR){
+            // 如果是connector 服务 挂载面向chat的socket服务
+            
+        }        
+    }  
+
+    /**
+     * 创建Gata服务
+     */
+    public initGate(){
+
+    }
+
 }

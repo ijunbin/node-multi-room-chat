@@ -2,9 +2,9 @@
 /**
  * RPC 客户端代理类
  */
-export class Proxy{
+class Proxy{
 
-    public socket
+    public socket;
 
     public callbackGenerateId;
 
@@ -30,13 +30,18 @@ export class Proxy{
         });
 
         socket.on('invoked', function(data){
-            console.log("finishInvoke...");
-            if(data.cbId){
-                var cb = self.callbackMap[data.cbId];
-                if(!!cb && typeof cb === "function"){
-                    eval("cb("+data.args+")");
-                }        
-            }                
+            console.log("finish remote process call...");
+            console.log("data:",data);
+            if(data.success){
+                if(data.cbId){
+                    var cb = self.callbackMap[data.cbId];
+                    if(!!cb && typeof cb === "function"){
+                        eval("cb("+data.args+")");
+                    }        
+                }                
+            }else{
+                console.log("RPC ERROR:"+data.msg);
+            }
         });
 
         socket.on('disconnect', function(){
@@ -78,12 +83,12 @@ export class Proxy{
 
 
     public sub(x,y,cb){
-        this.setCallbackMap(cb);
+        var cbId = this.setCallbackMap(cb);
         var args = {
             x:x,
             y:y
         }
-        this.removeInvoke("sub",args,cb);
+        this.removeInvoke("sub",args,cbId);
     }
 
 
@@ -100,3 +105,5 @@ export class Proxy{
         socket.emit('rpc',msg);
     }                 
 }
+
+module.exports = Proxy;
