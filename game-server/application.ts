@@ -90,4 +90,12 @@ export class Application{
     public isFrontend():boolean{
         return this.frontend;
     }
+
+    
+    /**
+     * 获取某种类型的所有服务器
+     */
+    public getServerByType(type:string):any{
+        return this.serverTypeMaps[type];                    
+    }
 }
