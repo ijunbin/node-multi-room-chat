@@ -30,7 +30,12 @@ export class Application{
 
     public frontend:boolean;
 
+    /**current server entry*/
+    public serverEntry;
+
     public settings = {};         //一些各自类型服务的信息  
+
+ 
 
     constructor(){
 

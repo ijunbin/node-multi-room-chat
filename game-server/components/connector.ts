@@ -2,6 +2,9 @@ import ctsMd = require("../common/constants");
 var Constants = ctsMd.Constants;
 import gateMd = require("./gate");
 var Gate = gateMd.Gate;
+import ssMd = require("../common/service/sessionService");
+import SessionService = ssMd.SessionService
+import Session = ssMd.Session;
 
 /**
  * Connector 抽象类
@@ -54,6 +57,7 @@ export class Connector{
     public init(){
         this.loadComponent(); 
         this.initFontendSocket();
+        
     }
 
     /**
@@ -61,7 +65,8 @@ export class Connector{
      */
     public loadComponent(){
         //sessionServer
-        
+        this.app.set("sessionServer",new SessionService());
+
     }
 
 
@@ -75,8 +80,19 @@ export class Connector{
         io.on('connection', function(socket){
             
             socket.on('enter', function(msg){
+                var username = msg.username;
+                var rid = msg.rid;
+                var fontendId = self.app.serverId;
 
-                
+                var sessionService = this.app.get("sessionServer");
+                var session = new Session(username,rid,socket,fontendId,sessionService);
+                var code = self.entryHandler(msg,session);
+                if(code == -1){
+
+                }else{
+
+                }
+
             })
 
 
@@ -89,6 +105,29 @@ export class Connector{
         console.log("%s 服务器 正在监听 %d 端口",app.serverId,app.get(Constants.RESERVED.CLIENT_PORT));
 
         this.io = io;
+    }
+
+    /**
+     * 
+     * 入口handler
+     */
+    private entryHandler(msg:any,session:Session):number{
+
+        var rid = msg.rid;  
+        var uid = msg.username + '*' + rid;
+
+        var sessionService = this.app.get("sessionServer");
+        if(!!sessionService.getByUid(uid)){
+            //已经进入了房间 
+            return -1
+        }
+
+        //第一次进入房间 
+        session.bind(uid);
+
+        //发送rpc调用,通知chat服务器将玩家加入房间
+
+        return 1;
     }
 
 }
