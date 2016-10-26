@@ -5,6 +5,8 @@ var Gate = gateMd.Gate;
 import ssMd = require("../common/service/sessionService");
 import SessionService = ssMd.SessionService
 import Session = ssMd.Session;
+var socketRpc = require("../rpc-demo/socket-rpc");
+var crc = require('crc');
 
 /**
  * Connector 抽象类
@@ -126,8 +128,23 @@ export class Connector{
         session.bind(uid);
 
         //发送rpc调用,通知chat服务器将玩家加入房间
-
-        return 1;
+        var chatServr = this.dispatchChat(rid);
+        var proxy = socketRpc.connect(chatServr.host,chatServr.port);
+        proxy.add(uid, this.app.serverId, rid,function(){
+            return 1;
+        })
     }
+
+
+    /**
+     * 根据rid 分发聊天服务器
+     */
+    private dispatchChat(rid:string){
+        var servers = this.app.getServerByType(Constants.RESERVED.CHAT);
+        var index = Math.abs(crc.crc32(rid)) % servers.length;
+	    return servers[index];
+    }
+
+    
 
 }

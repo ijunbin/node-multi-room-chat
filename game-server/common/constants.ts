@@ -18,6 +18,7 @@ export class Constants{
         SERVER_TYPE:"serverType",
         SERVER_ID:"serverId",
         TYPE:"type",
-        CLIENT_PORT:"clientPort"
+        CLIENT_PORT:"clientPort",
+        PORT:"port"
     }
 }

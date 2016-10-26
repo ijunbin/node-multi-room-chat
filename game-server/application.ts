@@ -30,9 +30,6 @@ export class Application{
 
     public frontend:boolean;
 
-    /**current server entry*/
-    public serverEntry;
-
     public settings = {};         //一些各自类型服务的信息  
 
  
@@ -103,4 +100,9 @@ export class Application{
     public getServerByType(type:string):any{
         return this.serverTypeMaps[type];                    
     }
+
+    public getServerById(id:string):any{
+        return this.servers[id];
+    }
+
 }

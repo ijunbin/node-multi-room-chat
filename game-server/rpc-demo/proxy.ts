@@ -71,26 +71,16 @@ class Proxy{
 
 
 
-    public add(x,y,cb){
+    public add(uid,sid,name,cb){
         var cbId = this.setCallbackMap(cb);
         var args = {
-            x:x,
-            y:y
+            // routs:"onAdd",
+            uid:uid,
+            sid:sid,
+            name:name
         }
         this.removeInvoke("add",args,cbId);
     }
-
-
-
-    public sub(x,y,cb){
-        var cbId = this.setCallbackMap(cb);
-        var args = {
-            x:x,
-            y:y
-        }
-        this.removeInvoke("sub",args,cbId);
-    }
-
 
     /**
      * 远程调用

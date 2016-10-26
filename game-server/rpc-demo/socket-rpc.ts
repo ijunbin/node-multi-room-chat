@@ -10,19 +10,22 @@ class SocketRpc{
     public port;
 
     constructor(wrapper){
-        if(wrapper instanceof Object){
+        if(!wrapper){
+            this.wrapper = {};
+        }else if(wrapper instanceof Object){
             this.wrapper = wrapper;
         }                        
     }
 
 
-    public listen(port:number){
+    public listen(port:number):SocketRpc{
         if(!port){
             return;
         }
         this.port = port;
         this.initServer(port);
         console.log("rpc server listening port:"+port);
+        return this;
     }
 
 
@@ -71,6 +74,14 @@ class SocketRpc{
                 console.log("some disconnect...");    
             })            
         })
+    }
+
+
+    /**
+     * 添加handler处理函数
+     */
+    public addHandler(name,func){   
+        this.wrapper[name] = func;
     }
 
     /**
