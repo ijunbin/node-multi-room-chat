@@ -62,7 +62,8 @@ export class MessageProxy{
         for(var i=0;i<sids.length;i++){
             var socket = this.getSocketByConnectorId(sids[i]);
             if(!!socket){
-                socket.emit("message",msg);
+                console.log("触发客户端onchat...");
+                socket.emit("chat",msg);
             } 
         }        
     }

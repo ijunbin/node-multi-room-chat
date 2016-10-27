@@ -81,20 +81,20 @@ export class Connector{
 
         io.on('connection', function(socket){
             
+            console.log("客户端连接了connect %s",self.app.serverId);
+
             socket.on('enter', function(msg){
+                console.log("%s 收到 enter message: %s ",self.app.serverId,JSON.stringify(msg));
                 var username = msg.username;
                 var rid = msg.rid;
                 var fontendId = self.app.serverId;
 
-                var sessionService = this.app.get("sessionService");
+                var sessionService = self.app.get("sessionService");
                 var session = new Session(username,rid,socket,fontendId,sessionService);
                 var code = self.entryHandler(msg,session);
                 if(code == -1){
-
-                }else{
-
+                    socket.emit("error","玩家已经在房间内...");
                 }
-
             })
 
             socket.on('disconnect', function () {
@@ -113,6 +113,7 @@ export class Connector{
      */
     private entryHandler(msg:any,session:Session):number{
 
+        console.log("将玩家加入房间...");
         var rid = msg.rid;  
         var uid = msg.username + '*' + rid;
 
@@ -128,7 +129,7 @@ export class Connector{
         //发送rpc调用,通知chat服务器将玩家加入房间
         var chatServr = this.dispatchChat(rid);
         var proxy = socketRpc.connect(chatServr.host,chatServr.port);
-        proxy.add(uid, this.app.serverId, rid,function(){
+        proxy.add(uid, this.app.serverId,rid,function(){
             return 1;
         })
     }

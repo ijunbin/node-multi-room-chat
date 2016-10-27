@@ -36,8 +36,9 @@ export class ChannelService{
      *  创建channel
      */
     public create(rid:string):Channel{
-        if(! this.channelMap[rid]){
-            throw("channel is already exist...");
+        if(!!this.channelMap[rid]){
+            console.error("channel is already exist...");
+            return this.channelMap[rid];
         }
         var channel = new Channel(rid,this);
         this.channelMap[rid] = channel;
@@ -55,8 +56,10 @@ export class ChannelService{
      * 推送消息
      */
     public pushMessage(rid,msg){
+        console.log("rid:"+rid);
         var channel = this.get(rid);
         var sids = channel.getChannelConnectorIds();
+        console.log("sids:"+sids);
         this.messageProxy.pushMessage(sids,rid,msg);                                
     }    
 

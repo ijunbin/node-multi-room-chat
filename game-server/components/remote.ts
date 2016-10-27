@@ -16,7 +16,7 @@ export class Remote{
     constructor(app){
         this.app = app;
         this.router["enter room"] = this.enterRoom;
-        this.router["chat"] = this.enterRoom;
+        this.router["chat"] = this.chat;
     }   
 
 
@@ -27,7 +27,7 @@ export class Remote{
 
         io.on('connection', function(socket){
 
-            console.log("someont connect to %s remote ",self.app.serverId);
+            console.log("someone connect to %s remote ",self.app.serverId);
 
             socket.on('message', function(msg){
                 if(!!msg.rout){
@@ -46,7 +46,7 @@ export class Remote{
             })
 
             socket.on('disconnect', function () {
-                console.log("someont disconnect to %s remote ",self.app.serverId);
+                console.log("someone disconnect to %s remote ",self.app.serverId);
             })
         })
         

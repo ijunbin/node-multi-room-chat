@@ -71,13 +71,13 @@ class Proxy{
 
 
 
-    public add(uid,sid,name,cb){
+    public add(uid,sid,rid,cb){
         var cbId = this.setCallbackMap(cb);
         var args = {
             // routs:"onAdd",
             uid:uid,
             sid:sid,
-            name:name
+            rid:rid
         }
         this.removeInvoke("add",args,cbId);
     }

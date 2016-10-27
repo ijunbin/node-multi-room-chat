@@ -47,13 +47,8 @@ class SocketRpc{
                         var fun = self.wrapper[msg.method];
                         if(typeof fun  === "function"){
                             var arg = self.parseParam(msg.args);
-                            var result = eval("fun("+arg+")");
-                            data = {
-                                success:true,
-                                msg:undefined,
-                                cbId:msg.callbackId,
-                                args:""+result+""
-                            }
+                            console.log("参数：",arg);
+                            fun(arg);
                         }        
                     }else{
                         data = {
@@ -67,7 +62,9 @@ class SocketRpc{
                         msg:"invaild param..."
                     }
                 }
-                socket.emit("invoked",data);    
+                if(!!data){
+                    console.error("rpc error "+ data.msg);    
+                }
             })
             
             socket.on('disconnect', function () {
