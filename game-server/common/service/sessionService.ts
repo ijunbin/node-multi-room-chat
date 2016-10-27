@@ -9,14 +9,30 @@ export class SessionService {
 
     public uidMap:{[s:string]:Session} = {}  // uid -> session
 
+    public ridMap:{[s:string]:string[]} = {};
 
     constructor(){
 
     }    
 
- 
+    
     /**
-     * 根据Uid获取session
+     * 根据 rid 获取sessions 
+     */
+    public getByRid(rid:string):Session[]{
+        var sessionArr = [];
+        var uidArr = this.ridMap[rid];
+        for(var i=0;i<uidArr.length;i++){
+            var session = this.getByUid(uidArr[i]);
+            if(!!session){
+                sessionArr.push(session);
+            }
+        }
+        return sessionArr;
+    }
+
+    /**
+     * 根据username获取session
      */
     public getByUid(uid:string):Session{
         return this.uidMap[uid];
@@ -33,7 +49,7 @@ export class Session {
 
     public rid:string;
 
-    public socket:any;
+    private socket:any;
 
     public fontendId:string;
 
@@ -55,9 +71,18 @@ export class Session {
 
     }
 
+    public getSocket():any{
+        return this.socket;
+    }
+
     public bind(uid:string){
         if(!!this.__sessionService__){
             this.__sessionService__.uidMap[uid] = this;
+            var rid = this.rid;  
+            if(!this.__sessionService__.ridMap[rid]){
+                this.__sessionService__.ridMap[rid] = [];
+            }
+            this.__sessionService__.ridMap[rid].push(this.uid); 
         }
     }
 }

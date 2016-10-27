@@ -6,8 +6,7 @@ class MyApp{
     public app:Application;
 
 
-    constructor(){
-                
+    constructor(){                
     }
 
 

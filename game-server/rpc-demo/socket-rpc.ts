@@ -80,7 +80,7 @@ class SocketRpc{
     /**
      * 添加handler处理函数
      */
-    public addHandler(name,func){   
+    public handler(name,func){   
         this.wrapper[name] = func;
     }
 

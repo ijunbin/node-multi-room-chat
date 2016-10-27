@@ -13,13 +13,14 @@ export class Gate{
 
     constructor(app){
         this.app = app;
+        this.initFrontend();
     }
 
 
     public initFrontend(){
 
         var self = this;
-        var io = require('socket.io')(app.get(Constants.RESERVED.CLIENT_PORT));
+        var io = require('socket.io')(self.app.get(Constants.RESERVED.CLIENT_PORT));
 
         io.on('connection', function(socket){
             
@@ -39,7 +40,7 @@ export class Gate{
             })
         })
 
-        console.log("%s 服务器 正在监听 %d 端口",app.serverId,app.get(Constants.RESERVED.CLIENT_PORT));
+        console.log("%s 服务器 正在监听 %d 端口",self.app.serverId,self.app.get(Constants.RESERVED.CLIENT_PORT));
 
         this.io = io;
     }

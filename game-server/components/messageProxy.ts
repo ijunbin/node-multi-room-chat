@@ -21,7 +21,7 @@ export class MessageProxy{
      */
     public addServer(connector){
         if(!connector.host || !connector.port || !connector.id){
-            console.error("cannot find connector's host or port or id...");
+            console.error("connector server config error : ",connector);
             return;
         }
 

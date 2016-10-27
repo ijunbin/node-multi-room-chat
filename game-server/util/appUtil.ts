@@ -45,9 +45,18 @@ export class appUtil{
             fs.readFileSync(Constants.FILEPATH.SERVER)
         );
         for(var key in servers){
+            if(Array.isArray(servers[key])){
+                var serverArr = servers[key];
+                for(var i=0;i<serverArr.length;i++){
+                    if(!!serverArr[i].id){
+                        app.servers[serverArr[i].id] = serverArr[i];
+                    }
+                }                    
+            }
+        }
+        for(var key in servers){
             app.serverTypeMaps[key] = servers[key];                                        
         }
-        app.servers = servers;
     }
 
     public static processArg(app,args){
@@ -59,6 +68,9 @@ export class appUtil{
         app.serverId = serverId;
         if(!!args.clientPort){
             app.set(Constants.RESERVED.CLIENT_PORT,args.clientPort);
+        }
+        if(!!args.port){
+            app.set(Constants.RESERVED.PORT,args.port);
         }
     }
 

@@ -37,10 +37,11 @@ export class Chat{
 
     public initRpcService(){
         var self =  this;
-        var port = self.app.getServerById(self.app.serverId);
+        var port = self.app.getServerById(self.app.serverId).port;
         var server = new socketRpc().listen(port);
-        server.addHandler("add",function(uid,sid,rid){
+        server.handler("add",function(uid,sid,rid){
             // 将玩家添加进房间
+            console.log("收到玩家进入房间信息...");
             var channelService = <ChannelService>self.app.get("channelService");
             var channel = <Channel>channelService.get(rid);
             if(!channel){

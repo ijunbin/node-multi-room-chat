@@ -7,6 +7,8 @@ import SessionService = ssMd.SessionService
 import Session = ssMd.Session;
 var socketRpc = require("../rpc-demo/socket-rpc");
 var crc = require('crc');
+import remoteMd = require("./remote")
+import Remote = remoteMd.Remote;
 
 /**
  * Connector 抽象类
@@ -19,6 +21,7 @@ export class Connector{
 
     public gate;
 
+    public remote;
 
     constructor(app){
         this.app = app;
@@ -48,9 +51,7 @@ export class Connector{
      * 创建Gate服务
      */
     public initGate(){
-
         this.gate = new Gate(this.app);
-        
     }
 
     /**
@@ -59,7 +60,7 @@ export class Connector{
     public init(){
         this.loadComponent(); 
         this.initFontendSocket();
-        
+        this.initRemote();
     }
 
     /**
@@ -67,17 +68,16 @@ export class Connector{
      */
     public loadComponent(){
         //sessionServer
-        this.app.set("sessionServer",new SessionService());
-
+        this.app.set("sessionService",new SessionService());
     }
 
 
     /**
-     * 
+     *  监听客户端的请求
      */
     public initFontendSocket(){
         var self = this;
-        var io = require('socket.io')(app.get(Constants.RESERVED.CLIENT_PORT));
+        var io = require('socket.io')(self.app.get(Constants.RESERVED.CLIENT_PORT));
 
         io.on('connection', function(socket){
             
@@ -86,7 +86,7 @@ export class Connector{
                 var rid = msg.rid;
                 var fontendId = self.app.serverId;
 
-                var sessionService = this.app.get("sessionServer");
+                var sessionService = this.app.get("sessionService");
                 var session = new Session(username,rid,socket,fontendId,sessionService);
                 var code = self.entryHandler(msg,session);
                 if(code == -1){
@@ -97,14 +97,12 @@ export class Connector{
 
             })
 
-
-
             socket.on('disconnect', function () {
                     
             })
         })
 
-        console.log("%s 服务器 正在监听 %d 端口",app.serverId,app.get(Constants.RESERVED.CLIENT_PORT));
+        console.log("%s 服务器 正在监听 %d 端口",self.app.serverId,self.app.get(Constants.RESERVED.CLIENT_PORT));
 
         this.io = io;
     }
@@ -118,7 +116,7 @@ export class Connector{
         var rid = msg.rid;  
         var uid = msg.username + '*' + rid;
 
-        var sessionService = this.app.get("sessionServer");
+        var sessionService = this.app.get("sessionService");
         if(!!sessionService.getByUid(uid)){
             //已经进入了房间 
             return -1
@@ -146,5 +144,9 @@ export class Connector{
     }
 
     
+    public initRemote(){
+        this.remote = new Remote(this.app);
+        this.remote.start();
+    }
 
 }
