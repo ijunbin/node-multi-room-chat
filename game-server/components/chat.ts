@@ -45,7 +45,7 @@ export class Chat{
             var uid = args[0];
             var sid = args[1]; 
             var rid = args[2];
-            console.log("uid %s sid: %s,rid %s ",uid.sid,rid);
+            console.log("uid %s sid: %s,rid :%s ",uid,sid,rid);
             console.log("%s 收到玩家进入房间信息...",self.app.serverId);
             var channelService = <ChannelService>self.app.get("channelService");
             var channel = <Channel>channelService.get(rid);
@@ -56,7 +56,7 @@ export class Chat{
             //广播信息给同一房间的玩家
             var msg = {
                 rout:"enter room",
-                from:uid.split("*")[0],
+                from:uid,
                 to:"*"                    
             };
             console.log("广播消息："+JSON.stringify(msg));

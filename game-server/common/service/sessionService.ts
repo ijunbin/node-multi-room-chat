@@ -9,7 +9,7 @@ export class SessionService {
 
     public uidMap:{[s:string]:Session} = {}  // uid -> session
 
-    public ridMap:{[s:string]:string[]} = {};
+    public ridMap:{[s:string]:string[]} = {};  //rid -> uids
 
     constructor(){
 
@@ -82,7 +82,7 @@ export class Session {
             if(!this.__sessionService__.ridMap[rid]){
                 this.__sessionService__.ridMap[rid] = [];
             }
-            this.__sessionService__.ridMap[rid].push(this.uid); 
+            this.__sessionService__.ridMap[rid].push(uid); 
         }
     }
 }

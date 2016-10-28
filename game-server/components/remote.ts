@@ -31,12 +31,12 @@ export class Remote{
 
             socket.on('message', function(msg){
                 if(!!msg.rout){
-                    if(typeof this.router[msg.rout] === "function"){
+                    if(typeof self.router[msg.rout] === "function"){
                         var sessionService = self.app.get("sessionService");
-                        var session = sessionService.getByUid(msg.uid);
+                        var session = sessionService.getByUid(msg.from);
                         var rout = msg.rout;
                         delete msg.rout;
-                        this.router[msg.rout](rout,msg,session);
+                        self.router[rout].call(self,rout,msg,session);
                     }else{
                         console.log("unexcept router:"+msg.rout);
                     }
@@ -65,6 +65,7 @@ export class Remote{
         var sessionArr = sessionService.getByRid(session.rid);
         for(var i=0;i<sessionArr.length;i++){
             var socket = sessionArr[i].getSocket();
+            console.log("client server socketId: ",socket.id);
             socket.emit(rout,msg);
         }
     }

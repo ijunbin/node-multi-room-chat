@@ -46,9 +46,9 @@ class SocketRpc{
                     if(msg.method in self.wrapper){
                         var fun = self.wrapper[msg.method];
                         if(typeof fun  === "function"){
-                            var arg = self.parseParam(msg.args);
-                            console.log("参数：",arg);
-                            fun(arg);
+                            var argArr = self.parseParam(msg.args);
+                            fun(argArr.toString());
+                            // fun.apply(self,argArr);
                         }        
                     }else{
                         data = {
@@ -84,12 +84,12 @@ class SocketRpc{
     /**
      * 解析参数
      */
-    private parseParam(args):string{
+    private parseParam(args):string[]{
         var arg = []
         for(var key in args){
             arg.push(args[key]); 
         }
-        return arg.toString();
+        return arg;
     }
 
 

@@ -1,4 +1,4 @@
-
+﻿
 !.gitignore
 game-server/node_modules/*
 web-server/node_modules/*
@@ -9,4 +9,5 @@ web-server/node_modules/*
 #排除手工维护的js文件
 !socket.io.js
 !index.js
+!nindex.js
 

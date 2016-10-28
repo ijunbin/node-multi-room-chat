@@ -6,8 +6,11 @@ export class MessageProxy{
 
     public socketMap = {}   //connector's serverId -> socket.io-client  
 
-    constructor(connectors){
+    public app;
 
+    constructor(app){
+        this.app = app;
+        var connectors = app.getServerByType("connector");
         if(!!connectors){
             for(var i=0;i<connectors.length;i++){
                 this.addServer(connectors[i]);
@@ -20,6 +23,7 @@ export class MessageProxy{
      * 添加服务器
      */
     public addServer(connector){
+        var self = this;
         if(!connector.host || !connector.port || !connector.id){
             console.error("connector server config error : ",connector);
             return;
@@ -30,7 +34,7 @@ export class MessageProxy{
         var socket = require('socket.io-client')('http://'+host+":"+port);
 
         socket.on('connect', function(){
-            console.log("socket connect...");
+            console.log("chat %s connect to %s",self.app.serverId,connector.id);
         });
 
         socket.on('message', function(data){
@@ -38,7 +42,7 @@ export class MessageProxy{
         });
 
         socket.on('disconnect', function(){
-            console.log("socket disconnect...");
+            console.log("chat %s disconnect to %s",self.app.serverId,connector.id);
         });
 
         this.socketMap[connector.id] = socket;
@@ -62,8 +66,8 @@ export class MessageProxy{
         for(var i=0;i<sids.length;i++){
             var socket = this.getSocketByConnectorId(sids[i]);
             if(!!socket){
-                console.log("触发客户端onchat...");
-                socket.emit("chat",msg);
+                // 发送给了connector
+                socket.send(msg);
             } 
         }        
     }

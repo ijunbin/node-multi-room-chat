@@ -15,7 +15,7 @@ export class ChannelService{
 
     constructor(app){
         this.app = app;
-        this.messageProxy = new MessageProxy(this.app.getServerByType("connector"));
+        this.messageProxy = new MessageProxy(this.app);
     }
 
     /**
@@ -56,11 +56,13 @@ export class ChannelService{
      * 推送消息
      */
     public pushMessage(rid,msg){
-        console.log("rid:"+rid);
         var channel = this.get(rid);
-        var sids = channel.getChannelConnectorIds();
-        console.log("sids:"+sids);
-        this.messageProxy.pushMessage(sids,rid,msg);                                
+        if(!!channel){
+            var sids = channel.getChannelConnectorIds();
+            this.messageProxy.pushMessage(sids,rid,msg);
+        }else{
+            console.error("cannot find channel: [ %s ]",rid);
+        }
     }    
 
 }
