@@ -11,6 +11,7 @@ export class SessionService {
 
     public ridMap:{[s:string]:string[]} = {};  //rid -> uids
 
+
     constructor(){
 
     }    
@@ -37,6 +38,7 @@ export class SessionService {
     public getByUid(uid:string):Session{
         return this.uidMap[uid];
     }
+
 }
 
 
@@ -84,5 +86,23 @@ export class Session {
             }
             this.__sessionService__.ridMap[rid].push(uid); 
         }
+    }
+
+    /**
+     * 客户端主动断开连接
+     * 删除与该客户端相关的 session
+     */
+    public exit(){
+        var sessionService = this.__sessionService__;
+        var uid = this.uname+"*"+this.rid;
+        delete sessionService.uidMap[uid];                    
+        var uidArr = sessionService.ridMap[this.rid];
+        for(var i=0;i<uidArr.length;i++){
+            if(uid == uidArr[i]){
+                uidArr.splice(i, 1);
+                break;                
+            }
+        }
+        this.__sessionService__ = undefined;
     }
 }

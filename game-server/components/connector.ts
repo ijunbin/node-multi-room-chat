@@ -9,6 +9,7 @@ var socketRpc = require("../rpc-demo/socket-rpc");
 var crc = require('crc');
 import remoteMd = require("./remote")
 import Remote = remoteMd.Remote;
+import _ = require("underscore");
 
 /**
  * Connector 抽象类
@@ -24,6 +25,8 @@ export class Connector{
     public remote;
 
     public proxyMap = {};   // sid -> proxy
+
+    public socketIdMap:{[s:string]:string} = {}; // socketId -> uid
 
     constructor(app){
         this.app = app;
@@ -86,7 +89,7 @@ export class Connector{
             
             
             socket.on('enter', function(msg){
-                console.log("%s 收到 进入房间 message: %s ",self.app.serverId,JSON.stringify(msg));
+                console.log("%s 收到进入房间消息: %s ",self.app.serverId,JSON.stringify(msg));
                 var uname = msg.uname;
                 var rid = msg.rid;
                 var fontendId = self.app.serverId;
@@ -111,6 +114,18 @@ export class Connector{
 
             // 处理玩家退出房间逻辑
             socket.on('disconnect', function () {
+                var sessionService = self.app.get("sessionService");
+                var uid = self.socketIdMap[socket.id];
+                if(!!uid){
+                    delete self.socketIdMap[socket.id];
+                }
+                var session = sessionService.getByUid(uid);
+                var rid = session.rid;
+                var uname = session.uname;
+                session.exit();
+                var chatSid = self.dispatchChat(rid);
+                var proxy = self.proxyMap[chatSid];
+                proxy.exit(uname,self.app.serverId,rid);
                 console.log("客户端 %s 断开了连接...退出房间",socket.id); 
             })
         })
@@ -152,7 +167,7 @@ export class Connector{
 
         //第一次进入房间 
         session.bind(uid);
-
+        this.socketIdMap[session.getSocket().id] = uid;
         //发送rpc调用,通知chat服务器将玩家加入房间
         var chatSid = this.dispatchChat(rid);
         var proxy = this.proxyMap[chatSid];

@@ -125,8 +125,15 @@ var init = function(params, cb){
             if(username == uname){
                 addMessage("欢迎您进入房间: "+data.rid);
             }else{
-                addMessage("欢迎"+data.from+"进入房间");
+                addMessage("欢迎 "+data.from+" 进入房间");
             }
+        }
+    })
+
+    socket.on("exit",function(data){
+        console.log("收到退出房间消息 : ",data);
+        if(!!data.uname){
+            addMessage(data.uname+" 退出房间")
         }
     })
 

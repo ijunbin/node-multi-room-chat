@@ -47,6 +47,10 @@ export class Chat{
         server.handler("chat",function(arg){
             self.onChat.apply(self,arg);
         })
+
+        server.handler("exit",function(arg){
+            self.onExit.apply(self,arg);
+        })
     }
 
     // 将玩家添加进房间
@@ -77,5 +81,19 @@ export class Chat{
         msg.rout = "chat";
         var channelService = <ChannelService>this.app.get("channelService");
         channelService.pushMessage(msg.rid,msg);
+    }
+
+    /**
+     * 玩家退出房间
+     */
+    public onExit(uname,sid,rid){
+        var msg = {
+            rout:"exit",
+            uname:uname,
+            sid:sid,
+            rid:rid
+        }
+        var channelService = <ChannelService>this.app.get("channelService");
+        channelService.pushMessage(rid,msg);
     }
 }

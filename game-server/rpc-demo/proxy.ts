@@ -91,6 +91,17 @@ class Proxy{
         this.removeInvoke("add",args,cbId);
     }
 
+
+    public exit(uname,sid,rid,cb){
+        var cbId = !cb?undefined:this.setCallbackMap(cb);
+        var args = {
+            uname:uname,
+            sid:sid,
+            rid:rid
+        }
+        this.removeInvoke("exit",args,cbId);
+    }
+
     /**
      * 远程调用
      */

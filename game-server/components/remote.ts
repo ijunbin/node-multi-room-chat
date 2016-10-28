@@ -17,7 +17,9 @@ export class Remote{
         this.app = app;
         this.router["enter room"] = this.enterRoom;
         this.router["chat"] = this.chat;
-    }   
+        this.router["exit"] = this.exit;
+    }
+       
 
 
     public start(){
@@ -73,6 +75,21 @@ export class Remote{
      */
     public chat(rout,msg){
         //获取当前房间在当前connector 的所有玩家，并进行广播
+        var sessionService = this.app.get("sessionService");
+        var sessionArr = sessionService.getByRid(msg.rid);
+        for(var i=0;i<sessionArr.length;i++){
+            var socket = sessionArr[i].getSocket();
+            socket.emit(rout,msg);
+        }    
+    }
+
+    /**
+     * 广播退出房间消息
+     */
+    public exit(rout,msg){
+        //获取当前房间在当前connector 的所有玩家，并进行广播
+        console.log("xxxxxxxxxxxxxxx");
+        console.log("msg:",JSON.stringify(msg));
         var sessionService = this.app.get("sessionService");
         var sessionArr = sessionService.getByRid(msg.rid);
         for(var i=0;i<sessionArr.length;i++){
