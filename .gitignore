@@ -1,7 +1,7 @@
 ﻿
 !.gitignore
-game-server/node_modules/*
-web-server/node_modules/*
+/game-server/node_modules/*
+/web-server/node_modules/*
 
 #忽略所有生成的 js 文件,
 *.js
