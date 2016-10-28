@@ -33,11 +33,8 @@ class SocketRpc{
         var self = this;
         var io = require('socket.io')(port);
         io.on('connection', function(socket){
-            console.log("some connect...");
-
-            socket.on('message', function (msg) {
-
-            })
+            
+            socket.on('message', function (msg) {})
 
             socket.on('rpc', function (msg) {
                 console.log("receive the remove process call:",msg);
@@ -47,9 +44,8 @@ class SocketRpc{
                         var fun = self.wrapper[msg.method];
                         if(typeof fun  === "function"){
                             var argArr = self.parseParam(msg.args);
-                            fun(argArr.toString());
-                            // fun.apply(self,argArr);
-                        }        
+                            fun(argArr);
+                        }
                     }else{
                         data = {
                             success:false,
@@ -59,17 +55,17 @@ class SocketRpc{
                 }else{
                     data = {
                         success:false,
-                        msg:"invaild param..."
+                        msg:"invaild param"
                     }
                 }
                 if(!!data){
-                    console.error("rpc error "+ data.msg);    
+                    console.error("RPC Error "+ data.msg);    
                 }
             })
             
             socket.on('disconnect', function () {
                 console.log("some disconnect...");    
-            })            
+            })
         })
     }
 

@@ -32,7 +32,7 @@ export class SessionService {
     }
 
     /**
-     * 根据username获取session
+     * 根据uid (uname*rid)获取session
      */
     public getByUid(uid:string):Session{
         return this.uidMap[uid];
@@ -45,7 +45,7 @@ export class SessionService {
 export class Session {
 
     /**username */
-    public uid:string;
+    public uname:string;
 
     public rid:string;
 
@@ -55,9 +55,9 @@ export class Session {
 
     private __sessionService__:SessionService;
 
-    constructor(uid:string,rid:string,socket:any,fontendId:string,service:any){
+    constructor(uname:string,rid:string,socket:any,fontendId:string,service:any){
 
-        this.uid = uid;
+        this.uname = uname;
         this.rid = rid;
         this.socket = socket;
         this.fontendId = fontendId;

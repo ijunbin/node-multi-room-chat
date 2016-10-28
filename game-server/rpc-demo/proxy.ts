@@ -70,12 +70,21 @@ class Proxy{
     }
 
 
-
-    public add(uid,sid,rid,cb){
-        var cbId = this.setCallbackMap(cb);
+    public chat(msg,sid,cb){
+        
+        var cbId = !cb?undefined:this.setCallbackMap(cb);
         var args = {
-            // routs:"onAdd",
-            uid:uid,
+            msg:JSON.stringify(msg),
+            sid:sid
+        }
+        this.removeInvoke("chat",args,cbId);    
+    }
+
+
+    public add(uname,sid,rid,cb){
+        var cbId = !cb?undefined:this.setCallbackMap(cb);
+        var args = {
+            uname:uname,
             sid:sid,
             rid:rid
         }

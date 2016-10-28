@@ -27,7 +27,7 @@ export class Gate{
             socket.on('enter', function(msg){
                 console.log("%s 收到 enter message: %s ",self.app.serverId,JSON.stringify(msg));
                 //选择一个connector 返回host 和 post
-                var oneConnector = self.dispatchConnector(msg.uid);
+                var oneConnector = self.dispatchConnector(msg.uname);
                 var param = {
                     cbId:msg.cbId,
                     host:oneConnector.host,
@@ -47,9 +47,9 @@ export class Gate{
     }
 
 
-    private dispatchConnector(uid){
+    private dispatchConnector(uname){
         var connectors = this.app.getServerByType(Constants.RESERVED.CONNECTOR);
-        var index = Math.abs(crc.crc32(uid)) % connectors.length;
+        var index = Math.abs(crc.crc32(uname)) % connectors.length;
 	    return connectors[index];
     }
 }

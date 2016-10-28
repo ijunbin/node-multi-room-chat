@@ -24,7 +24,8 @@ export class Starter{
     public static run(serverInfo,serverType){
         var options:string[] = [];
         if (!!serverInfo.args) {
-            if(typeof serverInfo.args === 'string' && serverInfo.port == 4050) {
+            if(typeof serverInfo.args === 'string' && serverInfo.port == 6051 || serverInfo.port == 4050) {
+                // 用于断点调试
                 // options.push(serverInfo.args.trim());
             }
         }
