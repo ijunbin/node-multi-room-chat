@@ -86,7 +86,7 @@ export class Connector{
             
             
             socket.on('enter', function(msg){
-                console.log("%s 收到 enter message: %s ",self.app.serverId,JSON.stringify(msg));
+                console.log("%s 收到 进入房间 message: %s ",self.app.serverId,JSON.stringify(msg));
                 var uname = msg.uname;
                 var rid = msg.rid;
                 var fontendId = self.app.serverId;

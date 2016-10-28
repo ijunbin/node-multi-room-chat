@@ -25,7 +25,7 @@ export class Gate{
         io.on('connection', function(socket){
             
             socket.on('enter', function(msg){
-                console.log("%s 收到 enter message: %s ",self.app.serverId,JSON.stringify(msg));
+                console.log("%s 收到 加入房间 message: %s ",self.app.serverId,JSON.stringify(msg));
                 //选择一个connector 返回host 和 post
                 var oneConnector = self.dispatchConnector(msg.uname);
                 var param = {

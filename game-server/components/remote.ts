@@ -33,14 +33,9 @@ export class Remote{
                 console.log(" %s 收到 message 消息",self.app.serverId);
                 if(!!msg.rout){
                     if(typeof self.router[msg.rout] === "function"){
-                        var sessionService = self.app.get("sessionService");
-                        var session = sessionService.getByUid(msg.from+"*"+msg.rid);
-                        if(!session){
-                            console.log("获取 session 失败：detail: ",JSON.stringify(msg));
-                        }
                         var rout = msg.rout;
                         delete msg.rout;
-                        self.router[rout].call(self,rout,msg,session);
+                        self.router[rout].call(self,rout,msg);
                     }else{
                         console.log("unexcept router:"+msg.rout);
                     }
@@ -63,10 +58,10 @@ export class Remote{
     /**
      * 玩家第一次进入房间的handler
      */
-    public enterRoom(rout,msg,session){
+    public enterRoom(rout,msg){
         //获取当前房间在当前connector 的所有玩家，并进行广播
         var sessionService = this.app.get("sessionService");
-        var sessionArr = sessionService.getByRid(session.rid);
+        var sessionArr = sessionService.getByRid(msg.rid);
         for(var i=0;i<sessionArr.length;i++){
             var socket = sessionArr[i].getSocket();
             socket.emit(rout,msg);
@@ -76,10 +71,10 @@ export class Remote{
     /**
      * 房间内玩家聊天的handler
      */
-    public chat(rout,msg,session){
+    public chat(rout,msg){
         //获取当前房间在当前connector 的所有玩家，并进行广播
         var sessionService = this.app.get("sessionService");
-        var sessionArr = sessionService.getByRid(session.rid);
+        var sessionArr = sessionService.getByRid(msg.rid);
         for(var i=0;i<sessionArr.length;i++){
             var socket = sessionArr[i].getSocket();
             socket.emit(rout,msg);
