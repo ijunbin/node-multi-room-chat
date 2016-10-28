@@ -35,6 +35,9 @@ export class Remote{
                     if(typeof self.router[msg.rout] === "function"){
                         var sessionService = self.app.get("sessionService");
                         var session = sessionService.getByUid(msg.from+"*"+msg.rid);
+                        if(!session){
+                            console.log("获取 session 失败：detail: ",JSON.stringify(msg));
+                        }
                         var rout = msg.rout;
                         delete msg.rout;
                         self.router[rout].call(self,rout,msg,session);
