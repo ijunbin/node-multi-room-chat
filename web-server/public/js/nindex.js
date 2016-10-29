@@ -132,6 +132,7 @@ var init = function(params, cb){
         if(!!data.uname){
             addMessage(data.uname+" 退出房间")
         }
+        removeUser(data.uname);
     })
 
     socket.on('error', function(err) {
@@ -148,6 +149,7 @@ var init = function(params, cb){
 var showLogin = function(){
     $('#dialog').show();
     $('#chat').hide(true);
+    $("#usersList").empty();
 }();
 
 //显示聊天室
@@ -176,4 +178,8 @@ var appendUsers = function(users){
         slElement.text(users[i]);
         $("#usersList").append(slElement);
     }
+}
+
+var removeUser = function(user){
+    $("#usersList option[value='"+user+"']").remove();
 }
