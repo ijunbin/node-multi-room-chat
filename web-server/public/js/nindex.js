@@ -108,7 +108,9 @@ var init = function(params, cb){
     //  接收推送消息时用
     socket.on("chat",function(data){
         console.log("收到聊天消息:",data);
-        var msg = data.from+" 对 "+data.to+" : "+data.content;
+        var who = data.from === uname?"您":data.from;
+        var towho = data.to === uname?"您":data.to;
+        var msg = who+" 对 "+towho+" : "+data.content;
         addMessage(msg);
     })
 

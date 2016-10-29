@@ -55,24 +55,32 @@ export class ChannelService{
     /**
      * 推送消息
      */
-    public pushMessage(rid,msg,returnUsers=false){
+    public pushMessage(rid,msg){
         var channel = this.get(rid);
         if(!!channel){
-            if(returnUsers){
-                var members = channel.getMember();
-                var users = [];
-                for(var i=0;i<members.length;i++){
-                    users.push(members[i].split("*")[0]);
-                } 
-                msg.users = users;
+            if(msg.rout === "enter room"){
+                this.addUser2Msg(channel,msg);                
             }
-            var sids = channel.getChannelConnectorIds();
+            var sids = channel.getConnectorIds(msg);
+            // console.log("sid:",sids);
+            // console.log("routmap: ",msg.routmap);
             this.messageProxy.pushMessage(sids,rid,msg);
         }else{
             console.error("cannot find channel: [ %s ]",rid);
         }
     }    
 
+    /**
+     * 添加返回所有玩家字段
+     */
+    private addUser2Msg(channel,msg){
+        var members = channel.getMember();
+        var users = [];
+        for(var i=0;i<members.length;i++){
+            users.push(members[i].split("*")[0]);
+        } 
+        msg.users = users;
+    }
 }
 
 
@@ -85,6 +93,8 @@ export class Channel{
 
      public groups = {};    // group map for uids. key: sid, value: [uid]
 
+     public records = {};      // member records. key: uid value{sid:,uid:}
+
      public userAmount:number = 0;
 
      private __channelService__;
@@ -94,14 +104,7 @@ export class Channel{
          this.__channelService__ = service;
          
      }
-
-     /**
-      * 获取房间内所有玩家所在的connector id
-      */
-     public getChannelConnectorIds(){
-         return _.keys(this.groups);
-     }
-
+    
      /**
       * 将玩家添加进channel
       */
@@ -110,8 +113,51 @@ export class Channel{
             this.groups[sid] = [];    
         }
         this.groups[sid].push(uid);
+        this.records[uid] = {
+            uid:uid,
+            sid:sid
+        }
         this.userAmount++;
      }
+
+
+     /**
+      * 玩家离开 有待完善
+      */
+     public leave(){
+
+     }
+
+     /**
+      * 根据 msg 的 to 字段来获取 sids []
+      */
+     public getConnectorIds(msg:any):string[]{
+         var sids = [];
+         if(msg.to === "*"){
+            sids = _.keys(this.groups);
+         }else{
+             msg.routmap = {};
+             var sidMap = {};
+             //  from sid
+             var fromUid = msg.from+"*"+msg.rid;
+             var fromsid = this.records[fromUid].sid
+             sidMap[fromsid] = [fromUid];
+             
+             //  to sid
+             var toUid = msg.to+"*"+msg.rid;
+             var tosid = this.records[toUid].sid
+             if(!sidMap[tosid]){
+                 sidMap[tosid] = [];
+             }
+             sidMap[tosid].push(toUid);
+             for(var key in sidMap){
+                 msg.routmap[key] = sidMap[key];
+             }
+             sids = _.keys(sidMap);
+         }
+         return sids;
+     }
+
 
 
      /**

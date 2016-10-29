@@ -70,7 +70,7 @@ export class Chat{
             to:"*"                    
         };
         console.log("广播消息："+JSON.stringify(msg));
-        channelService.pushMessage(rid,msg,true);
+        channelService.pushMessage(rid,msg);
     }
 
 
@@ -91,7 +91,8 @@ export class Chat{
             rout:"exit",
             uname:uname,
             sid:sid,
-            rid:rid
+            rid:rid,
+            to:"*"  
         }
         var channelService = <ChannelService>this.app.get("channelService");
         channelService.pushMessage(rid,msg);

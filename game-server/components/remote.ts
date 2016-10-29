@@ -56,11 +56,44 @@ export class Remote{
         console.log("%s 服务器 正在监听 %d 端口",self.app.serverId,self.app.get(Constants.RESERVED.PORT));
     }
 
+    /**
+     * 房间内玩家聊天的handler
+     */
+    public chat(rout,msg){
+        
+        var sessionService = this.app.get("sessionService");
+        var sessionArr = [];
+        if(msg.to === "*"){
+            sessionArr = sessionService.getByRid(msg.rid);
+            msg.to = "所有人";
+        }else{
+            var uids = msg.routmap[this.app.serverId];
+            console.log("单独推送：uids："+ uids);
+            for(var i=0;i<uids.length;i++){
+                sessionArr.push(sessionService.getByUid(uids[i]));
+            }
+        }
+        for(var i=0;i<sessionArr.length;i++){
+            var socket = sessionArr[i].getSocket();
+            socket.emit(rout,msg);
+        }    
+    }
 
     /**
-     * 玩家第一次进入房间的handler
+     * 广播退出房间
+     */
+    public exit(rout,msg){
+        this.broadcast(rout,msg);            
+    }
+
+    /**
+     * 广播进入房间
      */
     public enterRoom(rout,msg){
+        this.broadcast(rout,msg);
+    }
+
+    private broadcast(rout,msg){
         //获取当前房间在当前connector 的所有玩家，并进行广播
         var sessionService = this.app.get("sessionService");
         var sessionArr = sessionService.getByRid(msg.rid);
@@ -68,31 +101,5 @@ export class Remote{
             var socket = sessionArr[i].getSocket();
             socket.emit(rout,msg);
         }
-    }
-
-    /**
-     * 房间内玩家聊天的handler
-     */
-    public chat(rout,msg){
-        //获取当前房间在当前connector 的所有玩家，并进行广播
-        var sessionService = this.app.get("sessionService");
-        var sessionArr = sessionService.getByRid(msg.rid);
-        for(var i=0;i<sessionArr.length;i++){
-            var socket = sessionArr[i].getSocket();
-            socket.emit(rout,msg);
-        }    
-    }
-
-    /**
-     * 广播退出房间消息
-     */
-    public exit(rout,msg){
-        //获取当前房间在当前connector 的所有玩家，并进行广播
-        var sessionService = this.app.get("sessionService");
-        var sessionArr = sessionService.getByRid(msg.rid);
-        for(var i=0;i<sessionArr.length;i++){
-            var socket = sessionArr[i].getSocket();
-            socket.emit(rout,msg);
-        }    
     }
 }
