@@ -55,9 +55,17 @@ export class ChannelService{
     /**
      * 推送消息
      */
-    public pushMessage(rid,msg){
+    public pushMessage(rid,msg,returnUsers=false){
         var channel = this.get(rid);
         if(!!channel){
+            if(returnUsers){
+                var members = channel.getMember();
+                var users = [];
+                for(var i=0;i<members.length;i++){
+                    users.push(members[i].split("*")[0]);
+                } 
+                msg.users = users;
+            }
             var sids = channel.getChannelConnectorIds();
             this.messageProxy.pushMessage(sids,rid,msg);
         }else{
@@ -103,6 +111,21 @@ export class Channel{
         }
         this.groups[sid].push(uid);
         this.userAmount++;
+     }
+
+
+     /**
+      * 获取房间内所有成员
+      */
+     public getMember():string[]{
+        var member = [];
+        for(var key in this.groups){
+            var group = this.groups[key];
+            for(var i=0;i<group.length;i++){
+                member.push(group[i]);                
+            }
+        }
+        return member;                             
      }
 
 }

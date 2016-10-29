@@ -18,10 +18,6 @@ $('form').submit(function(){
 });
 
 var addMessage = function(msg){
-    // var senddate = new Date();
-    // senddate.setTime(data.timestamp * 1000);
-    // var time = senddate.format('yyyy-MM-dd h:m:s');
-    // $('#messages').append($('<li>').text("("+time+")  "+msg));
     $('#messages').append($('<li>').text(msg));        
 }
 
@@ -127,6 +123,7 @@ var init = function(params, cb){
             }else{
                 addMessage("欢迎 "+data.from+" 进入房间");
             }
+            appendUsers(data.users);
         }
     })
 
@@ -157,26 +154,26 @@ var showLogin = function(){
 var showChat = function(){
     $('#chat').show();
     $('#dialog').hide(true);
+    $('#name').html(uname);
+    $('#room').html(rid);
 }
 
-Date.prototype.format = function(format) {
-    var date = {
-        "M+": this.getMonth() + 1,
-        "d+": this.getDate(),
-        "h+": this.getHours(),
-        "m+": this.getMinutes(),
-        "s+": this.getSeconds(),
-        "q+": Math.floor((this.getMonth() + 3) / 3),
-        "S+": this.getMilliseconds()
-    };
-    if (/(y+)/i.test(format)) {
-        format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+/**
+ *  添加玩家
+ */
+var appendUsers = function(users){
+    if(!users){
+        return;
     }
-    for (var k in date) {
-        if (new RegExp("(" + k + ")").test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length == 1
-                ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
-        }
+    $("#usersList").empty();
+    var alluserElement = $(document.createElement("option"));
+    alluserElement.attr("value","*");
+    alluserElement.text("所有人");
+    $("#usersList").append(alluserElement);
+    for(var i = 0; i < users.length; i++) {
+        var slElement = $(document.createElement("option"));
+        slElement.attr("value", users[i]);
+        slElement.text(users[i]);
+        $("#usersList").append(slElement);
     }
-    return format;
 }

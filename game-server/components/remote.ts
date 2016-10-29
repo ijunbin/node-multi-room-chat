@@ -88,8 +88,6 @@ export class Remote{
      */
     public exit(rout,msg){
         //获取当前房间在当前connector 的所有玩家，并进行广播
-        console.log("xxxxxxxxxxxxxxx");
-        console.log("msg:",JSON.stringify(msg));
         var sessionService = this.app.get("sessionService");
         var sessionArr = sessionService.getByRid(msg.rid);
         for(var i=0;i<sessionArr.length;i++){

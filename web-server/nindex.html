@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>multi-room-chat</title>
+    <title>node分布式多人聊天室</title>
     <link rel="stylesheet" href="style.css" type="text/css" />
   </head>
   <body>
@@ -20,26 +20,26 @@
       <div id="toolbar">
           <ul id="status">
               <li>
-                  users:
+                  玩家:
                   <select name="users" id="usersList">
                       <option value="*">
-                          all
+                          所有人
                       </option>
                   </select>
               </li>
               <li>
-                  name:
+                  用户名:
                   <span id="name">
                   </span>
               </li>
               <li>
-                  room:
-                  <span id="curroom">
+                  房间:
+                  <span id="room">
                   </span>
               </li>
           </ul>
           <form action="">
-            <input id="m" autocomplete="off" /><button>Send</button>
+            <input id="m" autocomplete="off" /><button>发送</button>
           </form>
       </div>
     </div>

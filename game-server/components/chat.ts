@@ -70,7 +70,7 @@ export class Chat{
             to:"*"                    
         };
         console.log("广播消息："+JSON.stringify(msg));
-        channelService.pushMessage(rid,msg);
+        channelService.pushMessage(rid,msg,true);
     }
 
 
