@@ -1,4 +1,4 @@
-import appMd = require("./Application");
+import appMd = require("./application");
 import Application = appMd.Application;
 
 class MyApp{
