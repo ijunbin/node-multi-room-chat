@@ -1,4 +1,4 @@
-var proxy = require("./Proxy");
+var proxy = require("./proxy");
 
 /**
  * 简单版的socketRpc框架
